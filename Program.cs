@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSingleton<IProductRepository,InMemoryRepository>();
+builder.Services.AddSingleton<IProductRepository, InMemoryRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
 
 var app = builder.Build();
@@ -45,9 +45,10 @@ app.MapGet("/weatherforecast", () =>
 
 var productGroup = app.MapGroup("/api/products").WithTags("Products");
 
-productGroup.MapGet("/", async (IProductService productService) => {
-    var results = await productService.GetAllProductAsync(); 
-    return Results.Ok(results); 
+productGroup.MapGet("/", async (IProductService productService) =>
+{
+    var results = await productService.GetAllProductAsync();
+    return Results.Ok(results);
 })
     .WithName("GetAllProducts");
 
@@ -61,9 +62,11 @@ productGroup.MapGet("/{id:guid}", async (Guid id, IProductService productService
     return Results.Ok(result);
 })
     .WithName("GetProductById");
-   // .WithOpenApi();
+// .WithOpenApi();
 
-productGroup.MapPost("/", async(CreateProductRequest productRequest,IProductService productService) => {     try
+productGroup.MapPost("/", async (CreateProductRequest productRequest, IProductService productService) =>
+{
+    try
     {
         var createdProduct = await productService.CreateProductAsync(productRequest);
         return Results.Created($"/api/products/{createdProduct.Id}", createdProduct);
