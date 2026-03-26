@@ -1,6 +1,4 @@
-﻿using SolidStudy.DTOs;
-using SolidStudy.Models;
-using System.Collections;
+﻿using SolidStudy.Models;
 
 namespace SolidStudy.Repositories
 {
