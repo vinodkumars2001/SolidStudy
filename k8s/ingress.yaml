@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: solidstudy-ingress
+spec:
+  rules:
+  - host: solidstudy.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: solidstudy-service
+            port:
+              number: 80
