@@ -38,8 +38,8 @@ jobs:
         context: ./src/MyApp
         push: true
         tags: |
-          ${{ secrets.DOCKERHUB_USERNAME }}/solidStudy:${{ github.run_number }}
-          ${{ secrets.DOCKERHUB_USERNAME }}/solidStudy:latest
+          ${{ secrets.DOCKERHUB_USERNAME }}/solidstudy:${{ github.run_number }}
+          ${{ secrets.DOCKERHUB_USERNAME }}/solidstudy:latest
 
 
   deploy:
