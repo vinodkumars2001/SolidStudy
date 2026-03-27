@@ -60,9 +60,7 @@ jobs:
         kubectl apply -f k8s/ingress.yaml
 
     - name: Update image (rolling update)
-      run: |
-        kubectl set image deployment/solidstudy-deployment \
-        solidstudy-container=${{ secrets.DOCKERHUB_USERNAME }}/solidstudy:${{ github.run_number }}
+      run: kubectl set image deployment/solidstudy-deployment solidstudy-container=${{ secrets.DOCKERHUB_USERNAME }}/solidstudy:${{ github.run_number }}
 
     - name: Verify rollout
       run: kubectl rollout status deployment/solidstudy-deployment
