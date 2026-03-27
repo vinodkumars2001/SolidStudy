@@ -1,0 +1,68 @@
+name: .NET CI-CD
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - run: dotnet restore
+    - run: dotnet build --configuration Release --no-restore
+    - run: dotnet test --no-build --configuration Release
+
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - uses: docker/build-push-action@v6
+      with:
+        context: ./src/MyApp
+        push: true
+        tags: |
+          ${{ secrets.DOCKERHUB_USERNAME }}/solidStudy:${{ github.run_number }}
+          ${{ secrets.DOCKERHUB_USERNAME }}/solidStudy:latest
+
+
+  deploy:
+    name: Deploy to Minikube
+    runs-on: self-hosted
+    needs: docker
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set kubectl context
+      run: kubectl config use-context minikube
+
+    - name: Apply manifests (first time safe)
+      run: |
+        kubectl apply -f k8s/deployment.yaml
+        kubectl apply -f k8s/service.yaml
+        kubectl apply -f k8s/ingress.yaml
+
+    - name: Update image (rolling update)
+      run: |
+        kubectl set image deployment/solidstudy-deployment \
+        solidstudy-container=${{ secrets.DOCKERHUB_USERNAME }}/solidStudy:${{ github.run_number }}
+
+    - name: Verify rollout
+      run: kubectl rollout status deployment/solidstudy-deployment

@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: solidstudy-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: solidstudy
+  template:
+    metadata:
+      labels:
+        app: solidstudy
+    spec:
+      containers:
+      - name: solidstudy-container
+        image: vinodkumars2001/solidStudy:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
